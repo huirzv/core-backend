@@ -1,11 +1,12 @@
 const express = require('express');
-const statsRouter = require('./routes/stats');
 const app = express();
-
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use('/stats', statsRouter);
+
+// ROUTES
+const statsRoute = require('./routes/stats');
+app.use('/stats', statsRoute);
 
 app.get('/', (req, res) => {
   res.send('Backend is running.');
