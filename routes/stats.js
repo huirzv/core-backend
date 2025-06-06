@@ -1,30 +1,22 @@
-const gamesRoute = require('./routes/games');
-const groupsRoute = require('./routes/groups');
-const contactRoute = require('./routes/contact');
+const express = require('express');
+const router = express.Router();
+const { getTotalGroupMembers, getTotalActivePlayers, getTotalVisits } = require('../utils/robloxAPI');
 
-app.use('/games', gamesRoute);
-app.use('/groups', groupsRoute);
-app.use('/contact', contactRoute);
-
-// Add this endpoint to serve combined live stats
-app.get('/stats', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const { getTotalGroupMembers } = require('./utils/robloxAPI');
-    const { getTotalActivePlayers, getTotalVisits } = require('./utils/robloxAPI');
-
-    const [groupMembers, activePlayers, gameVisits] = await Promise.all([
-      getTotalGroupMembers(),
-      getTotalActivePlayers(),
-      getTotalVisits()
-    ]);
+    const groupMembers = await getTotalGroupMembers();
+    const activePlayers = await getTotalActivePlayers();
+    const gameVisits = await getTotalVisits();
 
     res.json({
       groupMembers,
       activePlayers,
       gameVisits,
-      gamesCreated: 10 // you can replace with dynamic count later
+      gamesCreated: 10 // Replace with dynamic later if needed
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch stats' });
   }
 });
+
+module.exports = router;
